@@ -52,7 +52,16 @@
         return String(value).trim().slice(0, 128);
       }
 
-      var code = readParam('code');
+      function codeFromPath() {
+        var segments = location.pathname.split('/').filter(Boolean);
+        var i = segments.lastIndexOf('j');
+        var raw = (i === -1) ? '' : (segments[i + 1] || '');
+        if (!raw || raw === 'index.html' || /\.html?$/i.test(raw)) return '';
+        try { return decodeURIComponent(raw).trim().slice(0, 128); }
+        catch (e) { return String(raw).trim().slice(0, 128); }
+      }
+
+      var code = readParam('code') || codeFromPath();
       var game = readParam('game');
       var parts = [];
       if (code) parts.push('code=' + encodeURIComponent(code));
