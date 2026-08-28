@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#0a141e">
+  <title>Join CardBaazi</title>
+  <meta property="og:title" content="Join CardBaazi">
+  <meta property="og:description" content="Open this link to join a private CardBaazi table.">
+  <meta name="description" content="Open CardBaazi and join a private table with this invite.">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0a141e; color: #fff; max-width: 520px; margin: 40px auto; padding: 0 20px 48px; line-height: 1.6; }
+    h1 { color: #f5d061; font-size: 2rem; margin-bottom: 8px; }
+    h2 { color: #f5d061; margin: 0 0 10px; font-size: 1.15rem; }
+    p { margin: 0 0 12px; }
+    a { color: #f5d061; font-weight: bold; }
+    .muted { opacity: .72; }
+    .card { background: rgba(255,255,255,0.08); padding: 22px; border-radius: 14px; margin: 18px 0; border: 1px solid rgba(245, 208, 97, 0.3); }
+    .code { font-size: 2rem; letter-spacing: 0.12em; font-weight: 700; text-align: center; padding: 14px 8px; border-radius: 10px; background: rgba(0,0,0,0.28); color: #f5d061; word-break: break-all; }
+    .game { text-align: center; margin-top: 8px; }
+    .btn { display: block; text-align: center; background: #f5d061; color: #0a141e; text-decoration: none; font-weight: 800; font-size: 1.15rem; padding: 16px 18px; border-radius: 12px; border: 0; width: 100%; box-sizing: border-box; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .btn-secondary { background: transparent; color: #f5d061; border: 1px solid rgba(245, 208, 97, 0.55); margin-top: 10px; font-size: 1rem; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Join CardBaazi</h1>
+  <p class="muted">Private table invite</p>
+
+  <div class="card">
+    <h2>Room code</h2>
+    <div class="code" id="codeDisplay">—</div>
+    <p class="game muted hidden" id="gameRow">Game: <span id="gameDisplay"></span></p>
+    <p id="noCode" class="muted hidden">This link has no room code. Ask your host to share a new invite.</p>
+  </div>
+
+  <a class="btn" id="openBtn" href="cardbaazi://join">Open in App</a>
+  <button type="button" class="btn btn-secondary hidden" id="copyBtn">Copy room code</button>
+
+  <div class="card">
+    <p>If CardBaazi does not open, copy the room code and paste it in the app under Private Table.</p>
+    <p class="muted">An App Store download link will be added here when the app is live.</p>
+  </div>
+
+  <p><a href="index.html">Home</a> · <a href="support.html">Support</a></p>
+
+  <script>
+    (function () {
+      function readParam(name) {
+        var value = new URLSearchParams(window.location.search).get(name) || '';
+        return String(value).trim().slice(0, 128);
+      }
+
+      var code = readParam('code');
+      var game = readParam('game');
+      var deepLink = 'cardbaazi://join?code=' + encodeURIComponent(code) + '&game=' + encodeURIComponent(game);
+
+      var openBtn = document.getElementById('openBtn');
+      var codeDisplay = document.getElementById('codeDisplay');
+      var gameRow = document.getElementById('gameRow');
+      var gameDisplay = document.getElementById('gameDisplay');
+      var noCode = document.getElementById('noCode');
+      var copyBtn = document.getElementById('copyBtn');
+
+      openBtn.setAttribute('href', deepLink);
+      codeDisplay.textContent = code || '—';
+
+      if (!code) {
+        noCode.classList.remove('hidden');
+      } else {
+        copyBtn.classList.remove('hidden');
+      }
+
+      if (game) {
+        gameDisplay.textContent = game;
+        gameRow.classList.remove('hidden');
+      }
+
+      copyBtn.addEventListener('click', function () {
+        function copied() {
+          copyBtn.textContent = 'Copied';
+          window.setTimeout(function () { copyBtn.textContent = 'Copy room code'; }, 1600);
+        }
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = code;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'absolute';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); copied(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(copied).catch(fallback);
+        } else {
+          fallback();
+        }
+      });
+
+      window.setTimeout(function () {
+        window.location.href = deepLink;
+      }, 80);
+    })();
+  </script>
+</body>
+</html>
