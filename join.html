@@ -54,7 +54,10 @@
 
       var code = readParam('code');
       var game = readParam('game');
-      var deepLink = 'cardbaazi://join?code=' + encodeURIComponent(code) + '&game=' + encodeURIComponent(game);
+      var parts = [];
+      if (code) parts.push('code=' + encodeURIComponent(code));
+      if (game) parts.push('game=' + encodeURIComponent(game));
+      var deepLink = 'cardbaazi://join' + (parts.length ? '?' + parts.join('&') : '');
 
       var openBtn = document.getElementById('openBtn');
       var codeDisplay = document.getElementById('codeDisplay');
