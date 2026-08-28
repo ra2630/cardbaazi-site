@@ -25,84 +25,41 @@
   </style>
 </head>
 <body>
-  <div id="notFound" class="hidden">
-    <h1>Page not found</h1>
-    <p>That URL is not on this CardBaazi site.</p>
-    <p><a id="nfHome" href="./">Home</a> · <a id="nfSupport" href="support.html">Support</a></p>
+  <h1>Join CardBaazi</h1>
+  <p class="muted">Private table invite</p>
+
+  <div class="card">
+    <h2>Room code</h2>
+    <div class="code" id="codeDisplay">—</div>
+    <p class="game muted hidden" id="gameRow">Game: <span id="gameDisplay"></span></p>
+    <p id="noCode" class="muted hidden">This link has no room code. Ask your host to share a new invite.</p>
   </div>
 
-  <div id="joinPage">
-    <h1>Join CardBaazi</h1>
-    <p class="muted">Private table invite</p>
+  <a class="btn" id="openBtn" href="cardbaazi://join">Open in App</a>
+  <button type="button" class="btn btn-secondary hidden" id="copyBtn">Copy room code</button>
 
-    <div class="card">
-      <h2>Room code</h2>
-      <div class="code" id="codeDisplay">—</div>
-      <p class="game muted hidden" id="gameRow">Game: <span id="gameDisplay"></span></p>
-      <p id="noCode" class="muted hidden">This link has no room code. Ask your host to share a new invite.</p>
-    </div>
-
-    <a class="btn" id="openBtn" href="cardbaazi://join">Open in App</a>
-    <button type="button" class="btn btn-secondary hidden" id="copyBtn">Copy room code</button>
-
-    <div class="card">
-      <p>If CardBaazi does not open, copy the room code and paste it in the app under Private Table.</p>
-      <p class="muted">An App Store download link will be added here when the app is live.</p>
-    </div>
-
-    <p><a id="homeLink" href="./">Home</a> · <a id="supportLink" href="support.html">Support</a></p>
+  <div class="card">
+    <p>If CardBaazi does not open, copy the room code and paste it in the app under Private Table.</p>
+    <p class="muted">An App Store download link will be added here when the app is live.</p>
   </div>
+
+  <p><a href="./">Home</a> · <a href="support.html">Support</a></p>
 
   <script>
     (function () {
-      function segments() {
-        return location.pathname.split('/').filter(Boolean);
-      }
-
-      function sitePrefix() {
-        var segs = segments();
-        if (segs.length && /\.html?$/i.test(segs[segs.length - 1])) segs.pop();
-        var jAt = segs.lastIndexOf('j');
-        if (jAt !== -1) segs = segs.slice(0, jAt);
-        var joinAt = segs.lastIndexOf('join');
-        if (joinAt !== -1) segs = segs.slice(0, joinAt);
-        return segs.length ? '/' + segs.join('/') + '/' : '/';
-      }
-
       function readParam(name) {
-        var value = new URLSearchParams(window.location.search).get(name) || '';
+        var value = new URLSearchParams(window.location.search).get(name);
+        if (value == null) return '';
         return String(value).trim().slice(0, 128);
       }
 
       function codeFromPath() {
-        var segs = segments();
+        var segs = location.pathname.split('/').filter(Boolean);
         var i = segs.lastIndexOf('j');
         var raw = (i === -1) ? '' : (segs[i + 1] || '');
         if (!raw || raw === 'index.html' || /\.html?$/i.test(raw)) return '';
         try { return decodeURIComponent(raw).trim().slice(0, 128); }
         catch (e) { return String(raw).trim().slice(0, 128); }
-      }
-
-      function isJoinRoute() {
-        var segs = segments();
-        var last = segs[segs.length - 1] || '';
-        if (last === 'join.html' || last === 'join' || last === '404.html') return true;
-        if (segs.indexOf('j') !== -1) return true;
-        if (readParam('code') || readParam('game')) return true;
-        return false;
-      }
-
-      var prefix = sitePrefix();
-      ['homeLink', 'supportLink', 'nfHome', 'nfSupport'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.setAttribute('href', id.indexOf('upport') !== -1 ? prefix + 'support.html' : prefix);
-      });
-
-      if (!isJoinRoute()) {
-        document.getElementById('joinPage').classList.add('hidden');
-        document.getElementById('notFound').classList.remove('hidden');
-        return;
       }
 
       var code = readParam('code') || codeFromPath();
